@@ -1,0 +1,1011 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Statistica — Blocchi</title>
+  <style>
+    :root{
+      --bg:#0b1020;
+      --card:#111a2e;
+      --card2:#0f172a;
+      --border:rgba(255,255,255,.12);
+      --text:#e8eef7;
+      --muted:#a8b3c5;
+      --accent:#7dd3fc;
+      --accent2:#34d399;
+      --shadow:0 16px 50px rgba(0,0,0,.45);
+      --r:16px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(900px 520px at 15% -10%, rgba(125,211,252,.18), transparent 55%),
+        radial-gradient(900px 520px at 90% 10%, rgba(52,211,153,.12), transparent 55%),
+        var(--bg);
+      min-height:100vh;
+    }
+    .wrap{max-width:1100px;margin:0 auto;padding:18px}
+    .top{
+      border:1px solid var(--border);
+      background:rgba(17,26,46,.75);
+      border-radius:var(--r);
+      box-shadow:var(--shadow);
+      padding:14px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{
+      width:44px;height:44px;border-radius:14px;
+      background:linear-gradient(135deg, rgba(125,211,252,.95), rgba(52,211,153,.78));
+      color:#06101f;font-weight:900;display:grid;place-items:center;
+      box-shadow:0 12px 30px rgba(125,211,252,.12);
+    }
+    .title{margin:0;font-size:18px;font-weight:850}
+    .sub{margin:4px 0 0 0;color:var(--muted);font-size:13px;max-width:80ch}
+    .right{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .pill{
+      border:1px solid var(--border);
+      background:rgba(15,23,42,.65);
+      padding:8px 10px;border-radius:999px;
+      color:var(--muted);font-size:12px;white-space:nowrap;
+    }
+    .search{
+      border:1px solid var(--border);
+      background:rgba(10,14,20,.55);
+      color:var(--text);
+      border-radius:999px;
+      padding:10px 12px;
+      outline:none;
+      width:min(380px, 92vw);
+    }
+    .search:focus{border-color: rgba(125,211,252,.55);}
+
+    .grid{margin-top:14px;display:grid;grid-template-columns: 1fr 320px;gap:14px}
+    @media (max-width: 980px){ .grid{grid-template-columns:1fr} }
+
+    .card{
+      border:1px solid var(--border);
+      background:rgba(17,26,46,.75);
+      border-radius:var(--r);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .cardHead{
+      padding:12px 14px;
+      border-bottom:1px solid var(--border);
+      background:rgba(15,23,42,.55);
+      display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+    }
+    .cardTitle{margin:0;font-size:13px;font-weight:900}
+    .btnRow{display:flex;gap:8px;flex-wrap:wrap}
+    .btn{
+      border:1px solid var(--border);
+      border-radius:12px;
+      padding:9px 10px;
+      cursor:pointer;
+      background:rgba(125,211,252,.14);
+      color:var(--text);
+      font-weight:800;
+      font-size:12px;
+    }
+    .btn.ghost{background:rgba(255,255,255,.05);color:var(--muted);font-weight:700}
+    .btn:hover{border-color: rgba(125,211,252,.55);}
+
+    .view{display:none}
+    .view.active{display:block}
+
+    .macroGrid{display:grid;grid-template-columns: repeat(2, minmax(0, 1fr));gap:12px}
+    @media (max-width: 720px){ .macroGrid{grid-template-columns:1fr} }
+
+    .macro{
+      border:1px solid var(--border);
+      background:rgba(15,23,42,.45);
+      border-radius:var(--r);
+      padding:12px;
+      cursor:pointer;
+      transition: transform .12s;
+    }
+    .macro:hover{transform: translateY(-1px);border-color: rgba(125,211,252,.55)}
+    .macro h2{margin:0 0 6px 0;font-size:16px}
+    .macro p{margin:0;color:var(--muted);font-size:13px;line-height:1.35}
+    .tagRow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .tag{
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.04);
+      color:var(--muted);
+      padding:6px 10px;border-radius:999px;font-size:12px
+    }
+    .tag.ok{border-color: rgba(52,211,153,.35);color: rgba(52,211,153,.95);background: rgba(52,211,153,.08)}
+    .tag.info{border-color: rgba(125,211,252,.35);color: rgba(125,211,252,.95);background: rgba(125,211,252,.08)}
+
+    .back{cursor:pointer;color:var(--accent);font-weight:800;font-size:13px;display:inline-flex;gap:8px;align-items:center}
+    .back:hover{text-decoration:underline}
+    .topicGrid{display:grid;grid-template-columns: repeat(3, minmax(0,1fr));gap:10px;margin-top:12px}
+    @media (max-width: 980px){ .topicGrid{grid-template-columns: repeat(2, minmax(0,1fr))} }
+    @media (max-width: 560px){ .topicGrid{grid-template-columns:1fr} }
+
+    .topic{
+      border:1px solid var(--border);
+      background:rgba(15,23,42,.45);
+      border-radius:14px;
+      padding:12px;
+      cursor:pointer;
+      transition: transform .12s;
+      min-height:86px;
+    }
+    .topic:hover{transform: translateY(-1px);border-color: rgba(52,211,153,.45)}
+    .topic .name{font-weight:900}
+    .topic .desc{margin-top:6px;color:var(--muted);font-size:12.5px;line-height:1.35}
+
+    .topicTitle{margin:8px 0 0 0;font-size:20px;font-weight:950}
+    .topicMeta{margin-top:8px;color:var(--muted);font-size:13px;line-height:1.4}
+
+    .sections{margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    @media (max-width: 980px){ .sections{grid-template-columns:1fr} }
+    .sec{border:1px solid var(--border);background:rgba(15,23,42,.40);border-radius:14px;overflow:hidden}
+    .secHead{padding:10px;border-bottom:1px solid var(--border);background:rgba(255,255,255,.03);font-weight:900;font-size:13px}
+    .secBody{padding:10px;white-space:pre-wrap;line-height:1.5}
+    .formula{
+      font-family:var(--mono);
+      background:rgba(255,255,255,.05);
+      border:1px solid var(--border);
+      padding:10px;border-radius:12px;margin:8px 0;
+      overflow:auto;
+      white-space:pre-wrap;
+    }
+    .mutedBox{
+      border:1px dashed rgba(255,255,255,.22);
+      background:rgba(255,255,255,.03);
+      padding:10px;border-radius:12px;color:var(--muted);font-size:12.5px;
+      white-space:pre-wrap;
+    }
+    .sideList{display:flex;flex-direction:column;gap:10px}
+    .sideItem{border:1px solid var(--border);background:rgba(15,23,42,.45);border-radius:14px;padding:12px}
+    .sideItem b{display:block;font-size:13px}
+    .sideItem span{display:block;color:var(--muted);font-size:12px;line-height:1.35}
+    .footerNote{margin-top:10px;color:var(--muted);font-size:12.5px}
+    code.kbd{font-family:var(--mono);font-size:12px;padding:2px 7px;border-radius:9px;border:1px solid var(--border);background:rgba(255,255,255,.05);color:rgba(232,238,247,.85)}
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div class="brand">
+        <div class="logo">Σ</div>
+        <div>
+          <p class="title">Statistica — Blocchi</p>
+          <p class="sub">Macro-blocco → argomento → sezioni (a cosa serve, definizione, formule, simboli, requisiti/proprietà, dimostrazioni, esempi). Compatibile iPhone.</p>
+        </div>
+      </div>
+      <div class="right">
+        <input id="search" class="search" placeholder="Cerca: mediana in classi, ECDF, IQR, frequenze cumulate..." autocomplete="off">
+        <div class="pill" id="statusPill">Home</div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <div class="cardHead">
+          <p class="cardTitle" id="mainTitle">Macro-blocchi</p>
+          <div class="btnRow">
+            <button class="btn ghost" id="homeBtn" style="display:none;">Torna ai macro</button>
+            <button class="btn ghost" id="resetBtn">Reset</button>
+          </div>
+        </div>
+
+        <div class="cardBody view active" id="view-home">
+          <div class="macroGrid" id="macroGrid"></div>
+          <div class="footerNote">Tip: su iPhone aprilo in Safari vero. Se lo apri in Anteprima/Quick Look, JS può non partire.</div>
+        </div>
+
+        <div class="cardBody view" id="view-macro">
+          <div class="back" id="backToHome">← Torna ai macro</div>
+          <h2 id="macroName" style="margin:8px 0 0 0;font-size:18px"></h2>
+          <div class="footerNote" id="macroDesc"></div>
+          <div class="tagRow" id="macroTags"></div>
+          <div class="topicGrid" id="topicGrid"></div>
+        </div>
+
+        <div class="cardBody view" id="view-topic">
+          <div class="back" id="backToMacro">← Torna al macro</div>
+          <h2 class="topicTitle" id="topicTitle">—</h2>
+          <div class="topicMeta" id="topicMeta">—</div>
+          <div class="sections" id="topicSections"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="cardHead">
+          <p class="cardTitle">Guida</p>
+          <div class="pill">Study mode: ON</div>
+        </div>
+        <div class="cardBody">
+          <div class="sideList">
+            <div class="sideItem">
+              <b>Come usarlo</b>
+              <span>1) scegli macro • 2) scegli argomento • 3) studia sempre le stesse sezioni.</span>
+            </div>
+            <div class="sideItem">
+              <b>Compatibilità iPhone</b>
+              <span>Questo codice evita funzioni “troppo nuove” e virgole finali che su Safari possono rompere tutto.</span>
+            </div>
+            <div class="sideItem">
+              <b>Consiglio</b>
+              <span>Se vuoi, poi aggiungiamo: boxplot disegnato, esempi automatici, quiz rapidi.</span>
+            </div>
+            <div class="sideItem">
+              <b>Shortcut</b>
+              <span>Su computer: <code class="kbd">Ctrl/Cmd</code> + <code class="kbd">F</code> cerca nella pagina.</span>
+            </div>
+          </div>
+          <div class="footerNote">Per assicurarti che sia HTML (non TXT): salva il file come <b>index.html</b> (non .txt) e aprilo con Safari.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+/* ===== Compatibilità: niente arrow, niente replaceAll, niente trailing commas ===== */
+
+function escapeHtml(s){
+  if (s === null || s === undefined) { s = ""; }
+  return String(s)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function makeTopic(id, name, shortDesc, sections){
+  return { id: id, name: name, shortDesc: shortDesc, sections: sections };
+}
+
+/* ===== DATA ===== */
+var DATA = [
+  {
+    id: "intro",
+    title: "Introduzione alla statistica",
+    desc: "Terminologia di base, classificazione variabili, misurazione, relazione col tempo.",
+    tags: ["Base", "Fondamenti"],
+    topics: [
+      makeTopic(
+        "terminologia_base",
+        "Terminologia di base",
+        "Collettivo statistico, unità statistica, variabile, modalità, nascita dei dati, indagine e studio osservazionale.",
+        {
+          purpose: "Impostare correttamente qualsiasi esercizio: chi osservo (collettivo), cosa è l’elemento (unità), cosa misuro (variabile) e quali valori assume (modalità).",
+          definition:
+            "• Collettivo statistico: insieme delle unità su cui osservo il fenomeno.\n" +
+            "• Unità statistica: singolo elemento del collettivo.\n" +
+            "• Variabile (carattere): proprietà osservata su ciascuna unità.\n" +
+            "• Modalità: valore/categoria assunto dalla variabile.\n" +
+            "• Come nascono i dati: osservazione, misurazione, registri, sensori, questionari.\n" +
+            "• Indagine statistica: processo organizzato di raccolta dati (obiettivo, popolazione, variabili, strumenti).\n" +
+            "• Studio osservazionale: osservi senza intervenire (diverso da esperimento).",
+          formulas: "N = numerosità (numero di unità osservate).",
+          symbols: "N (totale), X (variabile), xᵢ (valore su unità i), modalità (valori possibili).",
+          properties: "Definizioni univoche: chi/dove/quando; unità e variabili coerenti; modalità non ambigue.",
+          proofs: "—",
+          example:
+            "Esempio (università):\n" +
+            "Collettivo: studenti del corso nel 2025.\n" +
+            "Unità: singolo studente.\n" +
+            "Variabile: voto.\n" +
+            "Modalità: 18,19,…,30 (e lode se codificata)."
+        }
+      ),
+      makeTopic(
+        "classificazione_variabili",
+        "Classificazione delle variabili",
+        "Qualitative (sconnesse/ordinate; rettilinee/cicliche) e quantitative (discrete/continue; trasferibili/non trasferibili).",
+        {
+          purpose: "Scegliere il grafico e gli indici giusti: media sì/no, istogramma sì/no, mediana sì/no.",
+          definition:
+            "Qualitative:\n" +
+            "• Sconnesse (nominali): categorie senza ordine.\n" +
+            "• Ordinate (ordinali): categorie con ordine.\n" +
+            "• Rettilinee: ordine su una linea (basso→alto).\n" +
+            "• Cicliche: ordine su un ciclo (mesi, giorni).\n\n" +
+            "Quantitative:\n" +
+            "• Discrete: valori contabili (interi).\n" +
+            "• Continue: valori su intervalli.\n" +
+            "• Trasferibili/non trasferibili: dipende dalla scala (es. °C ha zero arbitrario, Kelvin no).",
+          formulas: "Regola pratica: etichette→qualitativa; somme/medie sensate→quantitativa; ciclo→ciclica.",
+          symbols: "X variabile; xᵢ valori; modalità = categorie/valori possibili.",
+          properties:
+            "Qualitativa sconnessa: niente mediana/quantili.\n" +
+            "Qualitativa ordinata: mediana/quantili OK.\n" +
+            "Quantitativa: media, varianza, σ OK.",
+          proofs: "—",
+          example:
+            "Qualitativa sconnessa: colore occhi.\n" +
+            "Qualitativa ordinata rettilinea: scarso < sufficiente < buono < ottimo.\n" +
+            "Qualitativa ciclica: mese.\n" +
+            "Quantitativa discreta: numero esami.\n" +
+            "Quantitativa continua: altezza.\n" +
+            "Trasferibilità: 20°C non è “il doppio” di 10°C."
+        }
+      ),
+      makeTopic(
+        "misurazione",
+        "Misurazione",
+        "Qualità del dato, codifica, precisione, bias e rumore.",
+        {
+          purpose: "Capire se un numero è misura o solo un codice, e ragionare su errori e affidabilità.",
+          definition:
+            "Misurazione = procedura che assegna un valore (numero o categoria) a ogni unità.\n" +
+            "Include strumenti, arrotondamenti, errori casuali e sistematici (bias).",
+          formulas:
+            "valore osservato = valore vero + errore\n" +
+            "errore = bias (sistematico) + rumore (casuale)",
+          symbols: "xᵢ osservato; x* vero; eᵢ errore.",
+          properties: "Precisione ≠ accuratezza. Codificare categorie con numeri NON le rende quantitative.",
+          proofs: "—",
+          example:
+            "Genere codificato 0/1 resta qualitativo.\n" +
+            "Bilancia tarata male → bias.\n" +
+            "Bilancia che oscilla → rumore."
+        }
+      ),
+      makeTopic(
+        "tempo",
+        "Relazione con il tempo",
+        "Trasversali, panel, serie storiche; trend e stagionalità.",
+        {
+          purpose: "Capire se hai una fotografia (cross-section) o un film (time/panel).",
+          definition:
+            "• Trasversale: molte unità in un istante.\n" +
+            "• Panel/longitudinale: stesse unità in tempi diversi.\n" +
+            "• Serie storica: osservazioni indicizzate nel tempo.",
+          formulas:
+            "xₜ = valore al tempo t\n" +
+            "Δxₜ = xₜ − xₜ₋₁",
+          symbols: "t tempo; xₜ osservazione; Δ differenza.",
+          properties: "Componenti: trend, stagionalità, cicli, rumore.",
+          proofs: "—",
+          example:
+            "Prezzo medio mensile → serie storica.\n" +
+            "Questionario a dicembre → trasversale.\n" +
+            "Le stesse 50 persone ogni mese → panel."
+        }
+      )
+    ]
+  },
+  {
+    id: "freq_graf",
+    title: "Frequenze, distribuzioni e grafici",
+    desc: "Frequenze assolute/relative/percentuali/cumulate, classi, grafici per qualitative e quantitative.",
+    tags: ["Tabelle", "Grafici"],
+    topics: [
+      makeTopic(
+        "frequenze",
+        "Frequenze: assolute, relative, percentuali, cumulate",
+        "Formule + esempio completo.",
+        {
+          purpose: "Base per tabelle, grafici e calcoli (mediana/quantili via cumulate).",
+          definition: "Per ogni modalità xᵢ conti fᵢ e poi normalizzi (hᵢ, pᵢ). Se c’è ordine, calcoli cumulate (Fᵢ, Hᵢ).",
+          formulas:
+            "fᵢ = conteggio\n" +
+            "N = Σ fᵢ\n" +
+            "hᵢ = fᵢ / N\n" +
+            "pᵢ = 100·hᵢ\n" +
+            "Fᵢ = Σ_{j≤i} fⱼ\n" +
+            "Hᵢ = Σ_{j≤i} hⱼ",
+          symbols: "xᵢ; fᵢ; hᵢ; pᵢ; Fᵢ; Hᵢ; N.",
+          properties: "Σ fᵢ=N; Σ hᵢ=1; Σ pᵢ=100. Cumulate crescono fino a N o 1.",
+          proofs: "—",
+          example:
+            "Dati: 6,6,7,8 (N=4)\n" +
+            "x: 6,7,8\n" +
+            "f: 2,1,1\n" +
+            "h: 0.5,0.25,0.25\n" +
+            "p: 50%,25%,25%\n" +
+            "F: 2,3,4   H: 0.5,0.75,1"
+        }
+      ),
+      makeTopic(
+        "classi_freq",
+        "Distribuzioni di frequenze in classi",
+        "Intervalli, ampiezza, densità, cumulate.",
+        {
+          purpose: "Raggruppare quantitative (soprattutto continue) quando i dati sono tanti.",
+          definition: "Dividi l’intervallo in classi [aₖ,bₖ) e conti quante osservazioni cadono in ogni classe.",
+          formulas:
+            "wₖ = bₖ − aₖ\n" +
+            "hₖ = fₖ / N\n" +
+            "Hₖ = Σ_{j≤k} hⱼ\n" +
+            "Se ampiezze diverse: dₖ = hₖ / wₖ (densità)",
+          symbols: "aₖ,bₖ,wₖ,fₖ,hₖ,Hₖ,dₖ,N.",
+          properties: "Classi contigue e non sovrapposte. Se ampiezze diverse, nell’istogramma conta l’area → usa densità.",
+          proofs: "—",
+          example:
+            "Classi: [2,4), [4,6), [6,8), [8,10]\n" +
+            "f: 3,4,3,2 (N=12)\n" +
+            "h: 0.25, 0.333, 0.25, 0.167\n" +
+            "H: 0.25, 0.583, 0.833, 1"
+        }
+      ),
+      makeTopic(
+        "graf_qual",
+        "Grafici per caratteri qualitativi",
+        "Barre e torta (quando usarli).",
+        {
+          purpose: "Visualizzare confronti tra categorie.",
+          definition: "Barre: altezza ∝ fᵢ (o hᵢ/pᵢ). Torta: settore ∝ pᵢ.",
+          formulas: "θᵢ = 360° · hᵢ",
+          symbols: "fᵢ,hᵢ,pᵢ,θᵢ.",
+          properties: "Barre meglio per confrontare. Torta ok se poche categorie.",
+          proofs: "—",
+          example: "Preferenze A/B/C: barre per confronto rapido; torta per percentuali immediate."
+        }
+      ),
+      makeTopic(
+        "graf_quant",
+        "Grafici per quantitative (non in classi)",
+        "Diagramma d’aste + ECDF (ripartizione empirica).",
+        {
+          purpose: "Aste per discrete/poche modalità; ECDF per leggere percentili/mediana.",
+          definition: "ECDF: quota di dati ≤ x, funzione a gradini.",
+          formulas:
+            "F̂(x) = (1/N) · #{i : xᵢ ≤ x}\n" +
+            "q_p = min{x : F̂(x) ≥ p}",
+          symbols: "F̂(x), q_p, p, # conteggio.",
+          properties: "F̂ cresce da 0 a 1 ed è a gradini.",
+          proofs: "—",
+          example: "Dati 2,4,6,6: F̂(4)=0.5; F̂(6)=1."
+        }
+      ),
+      makeTopic(
+        "graf_classi",
+        "Grafici per distribuzioni in classi",
+        "Istogramma + cumulata (da Hₖ).",
+        {
+          purpose: "Istogramma per forma, cumulata per soglie e percentili.",
+          definition: "Istogramma: rettangoli per classi. Cumulata: usa Hₖ.",
+          formulas:
+            "Se wₖ uguali: altezza ∝ hₖ\n" +
+            "Se wₖ diverse: altezza ∝ dₖ = hₖ/wₖ (area ∝ hₖ)\n" +
+            "Hₖ = Σ_{j≤k} hⱼ",
+          symbols: "hₖ,wₖ,dₖ,Hₖ.",
+          properties: "Con ampiezze diverse conta l’area, non solo l’altezza.",
+          proofs: "—",
+          example: "Classe larga il doppio: a pari frequenza deve avere altezza metà (densità)."
+        }
+      )
+    ]
+  },
+  {
+    id: "posizione",
+    title: "Medie, mediana, quartili, quantili, moda",
+    desc: "Medie analitiche + mediana (unità/frequenze/classi) + quartili/boxplot + quantili + moda.",
+    tags: ["Posizione", "Formule+Esempi"],
+    topics: [
+      makeTopic(
+        "medie",
+        "Medie analitiche",
+        "Aritmetica, geometrica, armonica, quadratica, di potenza, ponderata (con esempio 24,27,30).",
+        {
+          purpose: "Riassumere un insieme di valori con un numero centrale, con regole diverse.",
+          definition: "Medie analitiche: indici di posizione basati su operazioni sui dati (somma/prodotto/potenze/pesi).",
+          formulas:
+            "Aritmetica: x̄ = (1/N) Σ xᵢ\n" +
+            "Geometrica (xᵢ>0): G = (Π xᵢ)^(1/N)\n" +
+            "Armonica (xᵢ>0): H = N / Σ (1/xᵢ)\n" +
+            "Quadratica: Q = √( (1/N) Σ xᵢ² )\n" +
+            "Potenza (ordine r): M_r = ( (1/N) Σ xᵢ^r )^(1/r)\n" +
+            "Ponderata: x̄_w = (Σ wᵢ xᵢ) / (Σ wᵢ)",
+          symbols: "xᵢ; N; Π; wᵢ; r.",
+          properties: "Aritmetica sensibile agli outlier. Ponderata utile per CFU/pesi. Geometrica per crescite moltiplicative. Armonica per rapporti.",
+          proofs: "—",
+          example:
+            "Voti: 24,27,30\n" +
+            "Aritmetica: 27\n" +
+            "Geometrica: (24·27·30)^(1/3) ≈ 26.9\n" +
+            "Armonica: ≈ 26.8\n" +
+            "Quadratica: √735 ≈ 27.11\n" +
+            "Ponderata (1,2,3): (24+54+90)/6 = 28"
+        }
+      ),
+      makeTopic(
+        "mediana",
+        "Mediana (unità, frequenze, classi)",
+        "Definizione + formule + esempi nei 3 casi.",
+        {
+          purpose: "Indice robusto: poco influenzato da outlier e asimmetria.",
+          definition: "Valore che divide i dati ordinati in due metà (50% sotto e 50% sopra).",
+          formulas:
+            "1) Dati (ordinati x(1)≤…≤x(N)):\n" +
+            "N dispari: m = x((N+1)/2)\n" +
+            "N pari: m = (x(N/2)+x(N/2+1))/2\n\n" +
+            "2) Frequenze (modalità ordinate):\n" +
+            "prima modalità con Fᵢ ≥ N/2 (o Hᵢ ≥ 0.5)\n\n" +
+            "3) Classi (appross.):\n" +
+            "classe mediana: prima con Fₖ ≥ N/2\n" +
+            "m ≈ L + ((N/2 − F_prev)/fₖ)·w",
+          symbols: "x(k), N, Fᵢ/Hᵢ, L, F_prev, fₖ, w.",
+          properties: "Ha senso per variabili ordinate. Robusta. Proprietà nota: minimizza Σ|xᵢ−c|.",
+          proofs: "—",
+          example:
+            "Unità: 6,7,100 → m=7\n" +
+            "Frequenze: x:6,7,8 con f:2,1,1 (N=4)\n" +
+            "F:2,3,4 → N/2=2 → m=6\n" +
+            "Classi (N=20): mediana in [21,24) → m≈24 (esempio completo nel blocco)."
+        }
+      ),
+      makeTopic(
+        "quartili",
+        "Quartili e boxplot",
+        "Q1,Q2,Q3, IQR e regola outlier.",
+        {
+          purpose: "Riassumere posizione e dispersione robusta (IQR). Base del boxplot.",
+          definition: "Q1=25%, Q2=50% (mediana), Q3=75%.",
+          formulas:
+            "IQR = Q3 − Q1\n" +
+            "Outlier: < Q1 − 1.5·IQR oppure > Q3 + 1.5·IQR\n" +
+            "In classi: Qp ≈ L + ((p·N − F_prev)/fₖ)·w",
+          symbols: "Q1,Q2,Q3,IQR,p,L,w,fₖ,F_prev.",
+          properties: "Robusti agli outlier. Dipendono dal metodo (convenzioni).",
+          proofs: "—",
+          example: "Boxplot: scatola [Q1,Q3], linea=Q2, baffi fino ai non-outlier."
+        }
+      ),
+      makeTopic(
+        "quantili",
+        "Quantili (percentili)",
+        "Soglie e ranking: top 10%, limite 90%…",
+        {
+          purpose: "Definire soglie (cut-off) e confronti per percentili.",
+          definition: "Quantile di ordine p = valore sotto cui cade la frazione p dei dati.",
+          formulas:
+            "Da ECDF: q_p = min{x : F̂(x) ≥ p}\n" +
+            "In classi: q_p ≈ L + ((p·N − F_prev)/fₖ)·w",
+          symbols: "p, q_p, F̂(x), L,w,fₖ,F_prev.",
+          properties: "Posizionali e robusti. Usano ordine, non distanze.",
+          proofs: "—",
+          example: "p=0.90: il 90% dei dati è ≤ q_0.90."
+        }
+      ),
+      makeTopic(
+        "moda",
+        "Moda",
+        "Modalità più frequente (anche multipla).",
+        {
+          purpose: "Utile per qualitative e discrete: “qual è il valore più comune?”.",
+          definition: "Moda = valore/categoria con frequenza massima.",
+          formulas: "Moda = argmax_x f(x)",
+          symbols: "f(x).",
+          properties: "Può essere assente, unica o multipla.",
+          proofs: "—",
+          example: "A: 7,7.5,6,8,6.5 → nessuna moda. B: 7,7,7,7,7 → moda 7."
+        }
+      )
+    ]
+  },
+  {
+    id: "variabilita",
+    title: "Indici di variabilità",
+    desc: "Idea e requisiti, deviazione standard/varianza (unità/frequenze/classi), CV, range e IQR.",
+    tags: ["Dispersione", "Esempi"],
+    topics: [
+      makeTopic(
+        "idea",
+        "Idea e requisiti",
+        "Dispersione rispetto a un centro: perché gli scarti si annullano e come risolvere.",
+        {
+          purpose: "Distinguere distribuzioni con stesso livello medio ma diversa “stabilità”.",
+          definition: "Gli indici di variabilità misurano quanto i valori sono sparsi. Spesso si parte dagli scarti rispetto alla media.",
+          formulas:
+            "dᵢ = xᵢ − x̄\n" +
+            "Σ (xᵢ − x̄) = 0  (si annullano)\n" +
+            "Soluzioni: |dᵢ| oppure dᵢ²",
+          symbols: "x̄, dᵢ, N.",
+          properties:
+            "Requisiti tipici:\n" +
+            "• indice ≥ 0\n" +
+            "• =0 solo se tutti uguali\n" +
+            "• cresce con dispersione\n" +
+            "• σ nella stessa unità; varianza in unità²",
+          proofs: "—",
+          example:
+            "Studente A: 7, 7.5, 6, 8, 6.5\n" +
+            "Studente B: 7, 7, 7, 7, 7\n" +
+            "B è stabile (variabilità zero), A no."
+        }
+      ),
+      makeTopic(
+        "std",
+        "Deviazione standard",
+        "Formule per unità, frequenze, classi + esempio pagella A/B.",
+        {
+          purpose: "Quantificare la dispersione nella stessa unità dei dati.",
+          definition: "σ = √(varianza).",
+          formulas:
+            "Unità:\n" +
+            "x̄ = (1/N) Σ xᵢ\n" +
+            "σ² = (1/N) Σ (xᵢ − x̄)²\n" +
+            "σ = √σ²\n\n" +
+            "Frequenze:\n" +
+            "x̄ = (1/N) Σ fᵢ xᵢ\n" +
+            "σ² = (1/N) Σ fᵢ (xᵢ − x̄)²\n\n" +
+            "Classi (centri cₖ):\n" +
+            "x̄ ≈ (1/N) Σ fₖ cₖ\n" +
+            "σ² ≈ (1/N) Σ fₖ (cₖ − x̄)²",
+          symbols: "x̄, σ, σ², fᵢ, cₖ, N.",
+          properties: "σ≥0; σ=0 ⇔ tutti uguali. Sensibile agli outlier.",
+          proofs: "σ²≥0 perché somma di quadrati.",
+          example:
+            "A: 7,7.5,6,8,6.5 (N=5)\n" +
+            "x̄=7\n" +
+            "Scarti: 0, 0.5, -1, 1, -0.5\n" +
+            "Quadrati: 0, 0.25, 1, 1, 0.25 (somma 2.5)\n" +
+            "σ²=2.5/5=0.5 → σ≈0.707\n\n" +
+            "B: 7,7,7,7,7 → σ=0"
+        }
+      ),
+      makeTopic(
+        "varianza",
+        "Varianza",
+        "Dispersione quadratica (unità²).",
+        {
+          purpose: "Base teorica per σ e per molti modelli statistici.",
+          definition: "Media dei quadrati degli scarti dalla media.",
+          formulas:
+            "Unità: σ² = (1/N) Σ (xᵢ − x̄)²\n" +
+            "Frequenze: σ² = (1/N) Σ fᵢ (xᵢ − x̄)²\n" +
+            "Classi: σ² ≈ (1/N) Σ fₖ (cₖ − x̄)²",
+          symbols: "σ², x̄, fᵢ, cₖ, N.",
+          properties: "≥0; unità al quadrato.",
+          proofs: "Somma di quadrati ⇒ non negatività.",
+          example: "Nell’esempio A: σ² = 0.5."
+        }
+      ),
+      makeTopic(
+        "cv",
+        "Coefficiente di variazione (CV)",
+        "Variabilità relativa (confronti tra scale diverse).",
+        {
+          purpose: "Confrontare dispersione tra fenomeni con medie/scale diverse.",
+          definition: "Rapporto tra deviazione standard e media.",
+          formulas:
+            "CV = σ / x̄\n" +
+            "CV% = 100 · σ / x̄",
+          symbols: "CV, σ, x̄.",
+          properties: "Ha senso soprattutto se x̄>0. È adimensionale.",
+          proofs: "—",
+          example: "A: σ≈0.707, x̄=7 → CV≈0.101 → 10.1%"
+        }
+      ),
+      makeTopic(
+        "range_iqr",
+        "Range e IQR",
+        "Dispersione per variabili ordinate: semplice vs robusta.",
+        {
+          purpose: "Range = immediato; IQR = robusto (ignora estremi).",
+          definition:
+            "Range: max − min.\n" +
+            "IQR: Q3 − Q1 (50% centrale).",
+          formulas:
+            "R = max(xᵢ) − min(xᵢ)\n" +
+            "IQR = Q3 − Q1",
+          symbols: "R, Q1, Q3, IQR.",
+          properties: "Range molto sensibile agli outlier; IQR robusto. Entrambi ≥0; =0 se tutti uguali.",
+          proofs: "—",
+          example:
+            "A: 6,6.5,7,7.5,8 → R=2\n" +
+            "B: 7,7,7,7,7 → R=0\n" +
+            "Se Q1=6.5 e Q3=7.5 → IQR=1"
+        }
+      )
+    ]
+  }
+];
+
+/* ===== UI STATE ===== */
+var currentMacroId = null;
+
+function byId(id){ return document.getElementById(id); }
+
+var views = {
+  home: null,
+  macro: null,
+  topic: null
+};
+
+function showView(name){
+  views.home.className = "cardBody view" + (name === "home" ? " active" : "");
+  views.macro.className = "cardBody view" + (name === "macro" ? " active" : "");
+  views.topic.className = "cardBody view" + (name === "topic" ? " active" : "");
+
+  byId("homeBtn").style.display = (name === "home") ? "none" : "inline-block";
+  byId("mainTitle").textContent = (name === "home") ? "Macro-blocchi" : (name === "macro") ? "Macro-blocco" : "Argomento";
+  byId("statusPill").textContent = (name === "home") ? "Home" : (name === "macro") ? "Macro" : "Argomento";
+}
+
+function renderHome(list){
+  var grid = byId("macroGrid");
+  grid.innerHTML = "";
+
+  var arr = list || DATA;
+  for (var i=0; i<arr.length; i++){
+    var m = arr[i];
+    var div = document.createElement("div");
+    div.className = "macro";
+    (function(macroId){
+      div.onclick = function(){ openMacro(macroId); };
+    })(m.id);
+
+    var tagHtml = "";
+    for (var t=0; t<m.tags.length; t++){
+      tagHtml += '<span class="tag info">' + escapeHtml(m.tags[t]) + "</span>";
+    }
+    tagHtml += '<span class="tag ok">' + m.topics.length + " argomenti</span>";
+
+    div.innerHTML =
+      "<h2>" + escapeHtml(m.title) + "</h2>" +
+      "<p>" + escapeHtml(m.desc) + "</p>" +
+      '<div class="tagRow">' + tagHtml + "</div>";
+
+    grid.appendChild(div);
+  }
+}
+
+function openMacro(macroId){
+  var m = null;
+  for (var i=0; i<DATA.length; i++){
+    if (DATA[i].id === macroId){ m = DATA[i]; break; }
+  }
+  if (!m) return;
+
+  currentMacroId = macroId;
+  byId("macroName").textContent = m.title;
+  byId("macroDesc").textContent = m.desc;
+
+  var tags = byId("macroTags");
+  tags.innerHTML = "";
+  for (var k=0; k<m.tags.length; k++){
+    var s = document.createElement("span");
+    s.className = "tag info";
+    s.textContent = m.tags[k];
+    tags.appendChild(s);
+  }
+  var s2 = document.createElement("span");
+  s2.className = "tag ok";
+  s2.textContent = m.topics.length + " argomenti";
+  tags.appendChild(s2);
+
+  var tg = byId("topicGrid");
+  tg.innerHTML = "";
+  for (var j=0; j<m.topics.length; j++){
+    var top = m.topics[j];
+    var d = document.createElement("div");
+    d.className = "topic";
+    d.innerHTML =
+      '<div class="name">' + escapeHtml(top.name) + "</div>" +
+      '<div class="desc">' + escapeHtml(top.shortDesc) + "</div>";
+
+    (function(mid, tid){
+      d.onclick = function(){ openTopic(mid, tid); };
+    })(macroId, top.id);
+
+    tg.appendChild(d);
+  }
+
+  showView("macro");
+}
+
+function openTopic(macroId, topicId){
+  var m = null;
+  for (var i=0; i<DATA.length; i++){
+    if (DATA[i].id === macroId){ m = DATA[i]; break; }
+  }
+  if (!m) return;
+
+  var t = null;
+  for (var j=0; j<m.topics.length; j++){
+    if (m.topics[j].id === topicId){ t = m.topics[j]; break; }
+  }
+  if (!t) return;
+
+  byId("topicTitle").textContent = t.name;
+  byId("topicMeta").textContent = m.title + " → " + t.shortDesc;
+
+  var secWrap = byId("topicSections");
+  secWrap.innerHTML = "";
+
+  var S = t.sections || {};
+  secWrap.appendChild(sectionCard("A cosa serve", S.purpose, false));
+  secWrap.appendChild(sectionCard("Definizione", S.definition, false));
+  secWrap.appendChild(sectionCard("Formule", formatFormulas(S.formulas), true));
+  secWrap.appendChild(sectionCard("Simboli", formatTextOrMuted(S.symbols, "Aggiungi i simboli principali."), true));
+  secWrap.appendChild(sectionCard("Requisiti / Proprietà", formatBullets(S.properties), true));
+  secWrap.appendChild(sectionCard("Dimostrazioni", formatTextOrMuted(S.proofs, "Se serve una dimostrazione, mettila qui a passi chiari."), true));
+  secWrap.appendChild(sectionCard("Esempi", formatTextOrMuted(S.example, "Aggiungi almeno 1 esempio."), true));
+
+  showView("topic");
+}
+
+function sectionCard(title, content, isHtml){
+  var div = document.createElement("div");
+  div.className = "sec";
+  var body = (content && String(content).replace(/\s+/g," ").length > 0) ? content : '<div class="mutedBox">Contenuto da compilare.</div>';
+  div.innerHTML =
+    '<div class="secHead">' + escapeHtml(title) + '</div>' +
+    '<div class="secBody">' + (isHtml ? body : escapeHtml(body)) + "</div>";
+  return div;
+}
+
+function formatFormulas(s){
+  if (!s || String(s).trim() === "—"){
+    return '<div class="mutedBox">Nessuna formula specifica (o da aggiungere).</div>';
+  }
+  var lines = String(s).split("\n");
+  var out = "";
+  for (var i=0; i<lines.length; i++){
+    var line = lines[i].replace(/^\s+|\s+$/g,"");
+    if (line){
+      out += '<div class="formula">' + escapeHtml(line) + "</div>";
+    }
+  }
+  return out;
+}
+
+function formatBullets(s){
+  if (!s || String(s).trim() === "—"){
+    return '<div class="mutedBox">Elenca 3–6 requisiti/proprietà utili.</div>';
+  }
+  var txt = String(s);
+  var lines = txt.split("\n");
+  var cleaned = [];
+  for (var i=0; i<lines.length; i++){
+    var l = lines[i].replace(/^\s+|\s+$/g,"");
+    if (!l) continue;
+    l = l.replace(/^•\s*/, "");
+    cleaned.push(l);
+  }
+  if (cleaned.length >= 2){
+    var ul = "<ul>";
+    for (var j=0; j<cleaned.length; j++){
+      ul += "<li>" + escapeHtml(cleaned[j]) + "</li>";
+    }
+    ul += "</ul>";
+    return ul;
+  }
+  return "<div>" + escapeHtml(txt) + "</div>";
+}
+
+function formatTextOrMuted(s, msg){
+  if (!s || String(s).trim() === "—" || String(s).trim() === ""){
+    return '<div class="mutedBox">' + escapeHtml(msg) + "</div>";
+  }
+  return "<div>" + escapeHtml(s) + "</div>";
+}
+
+/* ===== SEARCH ===== */
+function normalize(s){
+  return String(s || "").toLowerCase().replace(/^\s+|\s+$/g,"");
+}
+
+function searchAll(q){
+  q = normalize(q);
+  if (!q) return [];
+
+  var results = [];
+  for (var i=0; i<DATA.length; i++){
+    var m = DATA[i];
+    var hitMacro = normalize(m.title).indexOf(q) !== -1 || normalize(m.desc).indexOf(q) !== -1;
+    if (hitMacro){
+      results.push({ type: "macro", macro: m });
+    }
+    for (var j=0; j<m.topics.length; j++){
+      var t = m.topics[j];
+      var hit = normalize(t.name).indexOf(q) !== -1 || normalize(t.shortDesc).indexOf(q) !== -1;
+      if (!hit){
+        var secs = t.sections || {};
+        var keys = ["purpose","definition","formulas","symbols","properties","proofs","example"];
+        for (var k=0; k<keys.length; k++){
+          var v = secs[keys[k]];
+          if (v && normalize(v).indexOf(q) !== -1){ hit = true; break; }
+        }
+      }
+      if (hit){
+        results.push({ type: "topic", macro: m, topic: t });
+      }
+    }
+  }
+  return results;
+}
+
+function showSearchResults(results){
+  var grid = byId("macroGrid");
+  grid.innerHTML = "";
+
+  if (!results || results.length === 0){
+    var d = document.createElement("div");
+    d.className = "mutedBox";
+    d.textContent = "Nessun risultato. Prova: “mediana”, “cumulata”, “IQR”, “ECDF”.";
+    grid.appendChild(d);
+    return;
+  }
+
+  for (var i=0; i<results.length; i++){
+    var r = results[i];
+    var div = document.createElement("div");
+    div.className = "macro";
+
+    if (r.type === "macro"){
+      (function(mid){
+        div.onclick = function(){ openMacro(mid); };
+      })(r.macro.id);
+
+      div.innerHTML =
+        "<h2>" + escapeHtml(r.macro.title) + "</h2>" +
+        "<p>" + escapeHtml(r.macro.desc) + "</p>" +
+        '<div class="tagRow"><span class="tag info">Macro</span><span class="tag ok">' + r.macro.topics.length + " argomenti</span></div>";
+    } else {
+      (function(mid, tid){
+        div.onclick = function(){ openTopic(mid, tid); };
+      })(r.macro.id, r.topic.id);
+
+      div.innerHTML =
+        "<h2>" + escapeHtml(r.topic.name) + "</h2>" +
+        "<p>" + escapeHtml(r.macro.title) + " — " + escapeHtml(r.topic.shortDesc) + "</p>" +
+        '<div class="tagRow"><span class="tag info">Argomento</span><span class="tag ok">' + escapeHtml(r.macro.title) + "</span></div>";
+    }
+
+    grid.appendChild(div);
+  }
+}
+
+/* ===== EVENTS + INIT ===== */
+function init(){
+  views.home = byId("view-home");
+  views.macro = byId("view-macro");
+  views.topic = byId("view-topic");
+
+  byId("backToHome").onclick = function(){ showView("home"); };
+  byId("backToMacro").onclick = function(){
+    if (currentMacroId){ openMacro(currentMacroId); }
+    else { showView("home"); }
+  };
+  byId("homeBtn").onclick = function(){ showView("home"); };
+
+  byId("resetBtn").onclick = function(){
+    byId("search").value = "";
+    renderHome(DATA);
+    showView("home");
+  };
+
+  byId("search").addEventListener("input", function(e){
+    var q = e.target.value;
+    if (!q || !q.replace(/\s+/g,"").length){
+      renderHome(DATA);
+      showView("home");
+      return;
+    }
+    showSearchResults(searchAll(q));
+    showView("home");
+  });
+
+  renderHome(DATA);
+  showView("home");
+}
+
+if (document.readyState === "loading"){
+  document.addEventListener("DOMContentLoaded", init);
+} else {
+  init();
+}
+</script>
+</body>
+</html>
